@@ -13,7 +13,8 @@ steps:
       ARCH: {{ if eq .ARCH "x86_64" }}x86_64{{ else }}unsupported{{ end }}
     prepare:
       - |
-        ./NVIDIA-Linux-x86_64-550.90.07-grid-azure.run --extract-only --target nvidia
+        chmod +x nvidia.run
+        ./nvidia.run --extract-only --target nvidia
     build:
       - |
         cd nvidia/kernel
