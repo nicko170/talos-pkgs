@@ -89,6 +89,7 @@ TARGETS += nvidia-open-gpu-kernel-modules-production-pkg
 TARGETS += zfs-pkg
 NONFREE_TARGETS = nonfree-kmod-nvidia-lts-pkg
 NONFREE_TARGETS += nonfree-kmod-nvidia-production-pkg
+NONFREE_TARGETS += nonfree-nvidia-driver-lts-pkg
 
 # help menu
 

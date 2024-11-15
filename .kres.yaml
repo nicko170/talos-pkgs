@@ -51,6 +51,7 @@ spec:
     nonfree:
       - nonfree-kmod-nvidia-lts-pkg
       - nonfree-kmod-nvidia-production-pkg
+      - nonfree-kmod-nvidia-grid-production-pkg
   reproducibleTargetName: reproducibility
 ---
 kind: auto.CustomSteps

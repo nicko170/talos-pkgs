@@ -1,0 +1,36 @@
+name: nonfree-kmod-nvidia-grid-production-pkg
+variant: scratch
+shell: /toolchain/bin/bash
+dependencies:
+  - stage: kernel-build
+steps:
+  - sources:
+      - url: https://download.microsoft.com/download/6/e/7/6e7ed842-1dcd-4c11-9742-34eae54542b2/NVIDIA-Linux-x86_64-550.90.07-grid-azure.run
+        destination: nvidia.run
+        sha256: 8395f8601cfcde7573b4fa5d7f40f7d64180d2e85d3c4238f62243b6a6807cb0
+        sha512: 18ece8f833ee9bd72299fd8b64b9eba1df914426aca6e4b99996584449d18869ce8e6e2da74fab84ed12e2b5bb0829988b28a3d87acc00887ee5490f2c6b161d
+    env:
+      ARCH: {{ if eq .ARCH "x86_64" }}x86_64{{ else }}unsupported{{ end }}
+    prepare:
+      - |
+        ./NVIDIA-Linux-x86_64-550.90.07-grid-azure.run --extract-only --target nvidia
+    build:
+      - |
+        cd nvidia/kernel
+
+        patch -p1 </pkg/patches/nvtophys.patch
+
+        make -j $(nproc) SYSSRC=/src
+    install:
+      - |
+        cd nvidia/kernel
+
+        mkdir -p /rootfs/lib/modules/$(cat /src/include/config/kernel.release)/
+        cp /src/modules.order /rootfs/lib/modules/$(cat /src/include/config/kernel.release)/
+        cp /src/modules.builtin /rootfs/lib/modules/$(cat /src/include/config/kernel.release)/
+        cp /src/modules.builtin.modinfo /rootfs/lib/modules/$(cat /src/include/config/kernel.release)/
+
+        make -j $(nproc) modules_install SYSSRC=/src DEPMOD=/toolchain/bin/depmod INSTALL_MOD_PATH=/rootfs INSTALL_MOD_DIR=extras INSTALL_MOD_STRIP=1
+finalize:
+  - from: /rootfs
+    to: /
